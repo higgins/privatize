@@ -47,6 +47,33 @@ Once you've either `privatize init` or `privatize unlock`'d your repo
 and updated your `.gitattributes` file, use git as you normally would
 and your files will be transparently encrypted/decrytped.
 
+## Markup example
+
+To privatize the contents of a file, make sure you wrap your text to
+be privatized with `<<PRIVATE` and `PRIVATE`. For now, both tags must
+start at the beginning of the line.
+
+```
+# example.txt
+
+Today I a burrito. 🌯
+<<PRIVATE
+I was on the toilet for hours.
+PRIVATE
+I got a lot of reading done.
+```
+Once privatized becomes
+
+```
+# example.txt
+
+Today I a burrito. 🌯
+<<PRIVATE
+xuJ0fld2vmNWaVLogTIufmWsiFso
+PRIVATE
+I got a lot of reading done.
+```
+
 ## Motivation
 
 I keep a daily journal in an org-mode file shared publicly. I share it
