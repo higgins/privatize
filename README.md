@@ -114,4 +114,4 @@ One rule holds true:
   - [ ] specify key+iv file
 - [ ] Allow for user specified HEREDOC string (<<CREDENTIALS)
 - [ ] Allow HEREDOC to start and end mid-line
-- [ ] Publish in NPM
+- [ ] Publish in NPM or translate this to C?
