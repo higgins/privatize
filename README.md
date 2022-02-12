@@ -1,5 +1,5 @@
 # privatize
-Partially encrypt/decrypt a file based on the presence of the heredoc (`<<PRIVATE`)
+Partially encrypt/decrypt a file based on the presence of the heredoc
 ===================================================================================
 
 `privatize` enables partial encryption/decryption of files based on the
@@ -14,7 +14,7 @@ untouched.
 Inspired by [git-crypt](https://github.com/AGWA/git-crypt).
 
 ## Installation
-`npm i -g privatize`
+TODO: `npm i -g privatize`
 
 ## Using with git
 To configure a repository to use `privatize`:
@@ -86,3 +86,5 @@ One rule holds true:
 - [ ] Allow standalone tool
   - [ ] specify key+iv file
 - [ ] Allow for user specified HEREDOC string (<<CREDENTIALS)
+- [ ] Allow HEREDOC to start and end mid-line
+- [ ] Publish in NPM
