@@ -1,4 +1,4 @@
-Partially encrypt/decrypt a file based on the presence of the heredoc
+Partially encrypt/decrypt a file based on the presence of a heredoc
 ===================================================================================
 
 `privatize` enables partial encryption/decryption of files based on the
