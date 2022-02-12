@@ -1,0 +1,22 @@
+{
+  "name": "privatize",
+  "version": "0.1.0",
+  "description": "Partially encrypt/decrypt a file based on the presence of a here-doc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/higgins/privatize.git"
+  },
+  "author": "Justin Higgins",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/higgins/privatize/issues"
+  },
+  "homepage": "https://github.com/higgins/privatize#readme",
+  "dependencies": {
+    "line-by-line": "^0.1.6"
+  }
+}
