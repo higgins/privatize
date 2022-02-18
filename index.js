@@ -65,13 +65,19 @@ async function assertNotInitialized(gitConfigPath) {
   }
 }
 
-async function createKeyAndIV(gitConfigPath) {
+async function createKeyAndIV({ gitConfigPath, path }) {
   try {
-    await mkdir(getDirPath(gitConfigPath));
+    let keyPath;
     // NOTE: aes-256 should have 256B key length. we use the first 32
     // bytes as the key and the next 16 as the initialization vector
     const keyAndIV = crypto.randomBytes(48);
-    fs.writeFileSync(`${getDirPath(gitConfigPath)}/key`, keyAndIV);
+    if (path) {
+      keyPath = path;
+    } else {
+      await mkdir(getDirPath(gitConfigPath));
+      keyPath = `${getDirPath(gitConfigPath)}/key`;
+    }
+    fs.writeFileSync(keyPath, keyAndIV);
   } catch(e) {
     exit(e.message);
   }
@@ -190,7 +196,7 @@ async function addGitFilters() {
 async function init() {
   const gitConfigPath = await getConfigPath();
   await assertNotInitialized(gitConfigPath);
-  await createKeyAndIV(gitConfigPath);
+  await createKeyAndIV({ gitConfigPath });
   await addGitFilters()
 }
 
@@ -201,7 +207,8 @@ Usage: privatize COMMAND [ARGS ...]
 Commands:
   git-init                  generate a key and prepare repo to use privatize
   git-unlock KEYFILE        decrypt this repo using the given symmetric key
-  export-key FILENAME       export this repo's symmetric key to the given file
+  export-git-key FILENAME   export this repo's symmetric key to the given file
+  create-key FILENAME       create a symmetric key for standalone encryption
   encrypt KEYFILE           encrypt a file from stdin and pipe to stdout
   decrypt KEYFILE           decrypt a file from stdin and pipe to stdout
 
@@ -235,10 +242,17 @@ See 'privatize help COMMAND' for more information on a specific command.
     const readStream = fs.createReadStream(diffFile);
     await privatizeStream({ cmd: "diff", readStream });
     exit();
-  } else if (cmd == 'export-key') {
+  } else if (cmd == 'create-key') {
     const fileName = process.argv[3];
     if (!fileName) {
-      exit("Error: export filename not provided");
+      exit("Error: create-key filename not provided");
+    }
+    await createKeyAndIV({ path: fileName });
+    exit()
+  } else if (cmd == 'export-git-key') {
+    const fileName = process.argv[3];
+    if (!fileName) {
+      exit("Error: export-git-key filename not provided");
     }
     const gitConfigPath = await getConfigPath();
     fs.copyFileSync(`${getDirPath(gitConfigPath)}/key`, fileName);

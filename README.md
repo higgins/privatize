@@ -34,7 +34,7 @@ credentials/*.md filter=privatize diff=privatize
 
 Copy your symmetric key to a secure place:
 ```
-privatize export-key exampleKeyFilename.key
+privatize export-git-key exampleKeyFilename.key
 ```
 
 Unlock a newly cloned repo:
@@ -50,11 +50,14 @@ encrypted/decrytped.
 ## Using with pipes
 
 ```
+# Create a stand-alone symmetric key for use outside of git
+privatize create-key symmetric.key
+
 # Encrypt a file and pipe to stdout
-cat someFileToPartiallyEncrypt | privatize encrypt privatize.key
+cat someFileToPartiallyEncrypt | privatize encrypt symmetric.key
 
 # Decrypt a file and pipe to stdout
-cat someFileToPartiallyDecrypt | privatize decrypt privatize.key
+cat someFileToPartiallyDecrypt | privatize decrypt symmetric.key
 ```
 
 ## Markup example
