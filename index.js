@@ -16,16 +16,21 @@ function exit(msg) {
   process.exit(!!msg);
 }
 
-function encryptBlock(val, key, iv) {
+function encryptBlock(val, key, ivSecret) {
+  let hmac = crypto.createHmac("sha1", ivSecret);
+  hmac.update(val);
+  const iv = hmac.digest("hex").slice(0,16);
   const cipher = crypto.createCipheriv(ALGO, key, iv);
   let encrypted = cipher.update(val, 'utf8', 'base64');
   encrypted += cipher.final('base64');
-  return encrypted;
+  return [iv, encrypted].join('');
 }
 
-function decryptBlock(val, key, iv) {
+function decryptBlock(val, key, _ivSecret) {
+  const iv = val.slice(0,16); // First 16 bytes stored are the IV
+  const encrypted = val.slice(16) // ...remaining are the contents to decrypt
   const decipher = crypto.createDecipheriv(ALGO, key, iv);
-  let decrypted = decipher.update(val, 'base64', 'utf8');
+  let decrypted = decipher.update(encrypted, 'base64', 'utf8');
   return (decrypted + decipher.final('utf8'));
 }
 
@@ -114,7 +119,8 @@ function privatizeStream(cmd, readStream, noop) {
     const gitConfigPath = await getConfigPath();
     const keyAndIV = fs.readFileSync(`${getDirPath(gitConfigPath)}/key`);
     const key = keyAndIV.slice(0,32); // first 32B are the key
-    const iv = keyAndIV.slice(32,48); // next 16B are the IV
+    const ivSecret = keyAndIV.slice(32,48); // next 16B are the IV secret
+
     let currentBlockIsProtected = false;
     let heredocIndex = 0;
     let lineNumber = 0;
@@ -155,7 +161,7 @@ function privatizeStream(cmd, readStream, noop) {
           if (!cmdFunc) { // diff
             outputLines[data.lineNumber] = data.raw.join('\n');
           } else {
-            outputLines[data.lineNumber] = await cmdFunc(data.raw.join('\n'), key, iv);
+            outputLines[data.lineNumber] = await cmdFunc(data.raw.join('\n'), key, ivSecret);
           }
         }
         for (let i = 0; i <= lineNumber; i++) {
