@@ -19,7 +19,7 @@ TODO: `npm i -g privatize`
 To configure a repository to use `privatize`:
 ```
 cd yourRepo
-privatize init
+privatize git-init
 ```
 
 Specify files to partially encrypt/decrypt by creating a
@@ -34,17 +34,28 @@ credentials/*.md filter=privatize diff=privatize
 
 Copy your symmetric key to a secure place:
 ```
-privatize export exampleKeyFilename.key
+privatize export-key exampleKeyFilename.key
 ```
 
 Unlock a newly cloned repo:
 ```
-privatize unlock exampleKeyFilename.key
+privatize git-unlock exampleKeyFilename.key
 ```
 
-Once you've either `privatize init` or `privatize unlock`'d your repo
-and updated your `.gitattributes` file, use git as you normally would
-and your files will be transparently encrypted/decrytped.
+Once you've either `privatize git-init` or `privatize git-unlock`'d
+your repo and updated your `.gitattributes` file, use git as you
+normally would and your files will be transparently
+encrypted/decrytped.
+
+## Using with pipes
+
+```
+# Encrypt a file and pipe to stdout
+cat someFileToPartiallyEncrypt | privatize encrypt privatize.key
+
+# Decrypt a file and pipe to stdout
+cat someFileToPartiallyDecrypt | privatize decrypt privatize.key
+```
 
 ## Markup example
 
@@ -84,33 +95,34 @@ change contexts (files) to document those aspects.
 
 Voilà.
 
+## Practical uses
+
+Aside from how I use it, here are some other useful applications:
+
+- Transparent legal documentation with PII redacted
+- Privatizing content for paying customers
+- Anywhere the concept of [literate
+  programming](https://en.wikipedia.org/wiki/Literate_programming)
+  applies
+
+
 ## Current status
 
-This repo resents the gist of the idea but [I've just discovered that
-using a fixed IV](https://github.com/AGWA/git-crypt#security) for
-encryption/decryption can leak information...so some significant parts
-of this code will be re-written.
+This is a functioning prototype and I'm open to suggestions for
+improvements. [Ping me](https://twitter.com/justinprojects) or submit
+a pull-request!
 
 ## Security
 
-I'm still building confidence that this encryption/decryption scheme
-is secure. Best to not rely on it for anything serious just yet.
+`privatize`'s encryption scheme is shamelessly borrowed from
+`git-crypt`'s. We encrypt the contents of heredocs using AES-256 in
+CTR mode with a synthetic IV derived from the blob's SHA-1 HMAC.
 
 One rule holds true:
 [**Never share the private key with those you don't want reading your encrypted data, Frodo Baggins!**](https://www.youtube.com/watch?v=iThtELZvfPs)
 
 ## TODO
-- [X] privatize init
-- [X] privatize export filename.key
-- [X] privatize clean
-- [X] privatize smudge
-- [X] privatize unlock
-- [X] privatize --help
-- [ ] privatize solo
-- [ ] Add encrypt / decrypt (user facing, expect encryption key)
-- [ ] Use SHA-1 HMAC of file as IV?
-- [ ] Allow standalone tool
-  - [ ] specify key+iv file
 - [ ] Allow for user specified HEREDOC string (<<CREDENTIALS)
 - [ ] Allow HEREDOC to start and end mid-line
-- [ ] Publish in NPM or translate this to C?
+- [ ] Publish in NPM
+- [ ] Distribute in homebrew
