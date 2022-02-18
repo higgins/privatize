@@ -1,9 +1,8 @@
-Partially encrypt/decrypt a file based on the presence of a heredoc
+privatize 👀
 ===================================================================================
 
 `privatize` enables partial encryption/decryption of files based on the
-presence of a [heredoc](https://en.wikipedia.org/wiki/Here_document)
-`<<PRIVATE`.
+presence of a [heredoc](https://en.wikipedia.org/wiki/Here_document).
 
 When installed in a git repository, files you choose to protect will
 have the contents of the heredoc `<<PRIVATE` automatically encrypted
