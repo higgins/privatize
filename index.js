@@ -49,16 +49,16 @@ async function getConfigPath() {
 }
 
 function getDirPath(gitConfigPath) {
-  return `${gitConfigPath}/git-privatize`;
+  return `${gitConfigPath}/privatize`;
 }
 
-// NOTE: if we've already initialized git-privatize, don't overwrite
+// NOTE: if we've already initialized privatize, don't overwrite
 // our key
 async function assertNotInitialized(gitConfigPath) {
   try {
     const initialized = fs.existsSync(getDirPath(gitConfigPath));
     if (initialized) {
-      return exit("Error: this repo has already initialized git-privatize")
+      return exit("Error: this repo has already initialized privatize")
     }
   } catch(e) {
     return exit(e.message)
@@ -114,10 +114,15 @@ async function unlock(keyFile) {
   }
 }
 
-function privatizeStream(cmd, readStream, noop) {
+function privatizeStream({ cmd, readStream, keyFile }) {
   return new Promise(async (resolve) => {
-    const gitConfigPath = await getConfigPath();
-    const keyAndIV = fs.readFileSync(`${getDirPath(gitConfigPath)}/key`);
+    let keyAndIV;
+    if (keyFile) {
+      keyAndIV = fs.readFileSync(keyFile);
+    } else {
+      const gitConfigPath = await getConfigPath();
+      keyAndIV = fs.readFileSync(`${getDirPath(gitConfigPath)}/key`);
+    }
     const key = keyAndIV.slice(0,32); // first 32B are the key
     const ivSecret = keyAndIV.slice(32,48); // next 16B are the IV secret
 
@@ -154,7 +159,7 @@ function privatizeStream(cmd, readStream, noop) {
 
     rl.on('close', async function() {
       if (currentBlockIsProtected) {
-        exit("Error: git-privatize's HEREDOC (<<PRIVATE) was opened but not closed.");
+        exit("Error: privatize's HEREDOC (<<PRIVATE) was opened but not closed.");
       } else {
         const cmdFunc = funcMap[cmd];
         for (data of privatizeQueue) {
@@ -176,10 +181,10 @@ function privatizeStream(cmd, readStream, noop) {
 }
 
 async function addGitFilters() {
-  await exec("git config filter.git-privatize.smudge '\"git-privatize\" smudge'");
-  await exec("git config filter.git-privatize.clean '\"git-privatize\" clean'");
-  await exec("git config diff.git-privatize.textconv '\"git-privatize\" diff'");
-  await exec("git config filter.git-privatize.required true");
+  await exec("git config filter.privatize.smudge '\"privatize\" smudge'");
+  await exec("git config filter.privatize.clean '\"privatize\" clean'");
+  await exec("git config diff.privatize.textconv '\"privatize\" diff'");
+  await exec("git config filter.privatize.required true");
 }
 
 async function init() {
@@ -191,36 +196,46 @@ async function init() {
 
 function help() {
   console.log(`
-Usage: git-privatize COMMAND [ARGS ...]
+Usage: privatize COMMAND [ARGS ...]
 
 Commands:
-  init                 generate a key and prepare repo to use git-privatize
-  export FILENAME      export this repo's symmetric key to the given file
-  unlock KEYFILE       decrypt this repo using the given symmetric key
+  git-init                  generate a key and prepare repo to use privatize
+  git-unlock KEYFILE        decrypt this repo using the given symmetric key
+  export-key FILENAME       export this repo's symmetric key to the given file
+  encrypt KEYFILE           encrypt a file from stdin and pipe to stdout
+  decrypt KEYFILE           decrypt a file from stdin and pipe to stdout
 
-See 'git-privatize help COMMAND' for more information on a specific command.
+See 'privatize help COMMAND' for more information on a specific command.
 `);
 }
 
 (async () => {
   const cmd = process.argv[2];
-  if (['clean', 'smudge'].indexOf(cmd) > -1) {
-    await privatizeStream(cmd);
+  if (['clean', 'smudge'].indexOf(cmd) > -1) { // internal, for filter
+    await privatizeStream({ cmd });
     exit();
-  } else if (cmd === 'init') {
+  } else if (cmd === 'git-init') {
     await init();
     exit();
-  } else if (cmd === 'unlock') {
+  } else if (cmd === 'git-unlock') {
     const keyFile = process.argv[3];
     await unlock(keyFile);
     exit();
-  } else if (cmd === 'diff') {
+  } else if (cmd === 'encrypt') {
+    const keyFile = process.argv[3];
+    await privatizeStream({ cmd: "clean", keyFile });
+    exit();
+  } else if (cmd === 'decrypt') {
+    const keyFile = process.argv[3];
+    await privatizeStream({ cmd: "smudge", keyFile });
+    exit();
+  } else if (cmd === 'diff') { // internal, for git-diff
     const diffFile = process.argv[3];
     const newFile = diffFile.startsWith('/');
-    const diffReadStream = fs.createReadStream(diffFile);
-    await privatizeStream("diff", diffReadStream);
+    const readStream = fs.createReadStream(diffFile);
+    await privatizeStream({ cmd: "diff", readStream });
     exit();
-  } else if (cmd == 'export') {
+  } else if (cmd == 'export-key') {
     const fileName = process.argv[3];
     if (!fileName) {
       exit("Error: export filename not provided");
