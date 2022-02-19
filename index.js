@@ -211,8 +211,7 @@ Commands:
   create-key FILENAME       create a symmetric key for standalone encryption
   encrypt KEYFILE           encrypt a file from stdin and pipe to stdout
   decrypt KEYFILE           decrypt a file from stdin and pipe to stdout
-
-See 'privatize help COMMAND' for more information on a specific command.
+  help                      prints this message
 `);
 }
 

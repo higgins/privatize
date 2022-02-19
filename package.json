@@ -1,6 +1,6 @@
 {
   "name": "privatize",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Partially encrypt/decrypt a file based on the presence of a here-doc",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,16 @@
     "url": "https://github.com/higgins/privatize/issues"
   },
   "homepage": "https://github.com/higgins/privatize#readme",
-  "dependencies": {
-    "line-by-line": "^0.1.6"
+  "dependencies": {},
+  "bin": {
+    "privatize": "./index.js"
+  },
+  "pkg": {
+    "targets": [
+      "node14-linux-x64",
+      "node14-macos-x64",
+      "node14-win-x64"
+    ],
+    "outputPath": "release"
   }
 }
