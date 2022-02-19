@@ -1,9 +1,8 @@
-Partially encrypt/decrypt a file based on the presence of a heredoc
+privatize 👀
 ===================================================================================
 
-`privatize` enables partial encryption/decryption of files based on the
-presence of a [heredoc](https://en.wikipedia.org/wiki/Here_document)
-`<<PRIVATE`.
+`privatize` enables partial encryption/decryption for the contents of
+a [heredoc](https://en.wikipedia.org/wiki/Here_document) (`<<PRIVATE`).
 
 When installed in a git repository, files you choose to protect will
 have the contents of the heredoc `<<PRIVATE` automatically encrypted
@@ -13,7 +12,11 @@ untouched.
 Inspired by [git-crypt](https://github.com/AGWA/git-crypt).
 
 ## Installation
-TODO: `npm i -g privatize`
+### MacOS
+```
+brew tap higgins/privatize
+brew install privatize
+```
 
 ## Using with git
 To configure a repository to use `privatize`:
@@ -127,5 +130,4 @@ One rule holds true:
 ## TODO
 - [ ] Allow for user specified HEREDOC string (<<CREDENTIALS)
 - [ ] Allow HEREDOC to start and end mid-line
-- [ ] Publish in NPM
 - [ ] Distribute in homebrew
