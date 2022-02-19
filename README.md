@@ -128,6 +128,5 @@ One rule holds true:
 [**Never share the private key with those you don't want reading your encrypted data, Frodo Baggins!**](https://www.youtube.com/watch?v=iThtELZvfPs)
 
 ## TODO
-- [ ] Allow for user specified HEREDOC string (<<CREDENTIALS)
+- [ ] Allow for arbitrary HEREDOC strings ("<<CREDENTIALS", "```")
 - [ ] Allow HEREDOC to start and end mid-line
-- [ ] Distribute in homebrew
