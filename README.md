@@ -50,6 +50,9 @@ your repo and updated your `.gitattributes` file, use git as you
 normally would and your files will be transparently
 encrypted/decrytped.
 
+**Make sure your .gitattributes rules are in place before you add
+sensitive files, or those files won't be encrypted!**
+
 ## Using with pipes
 
 ```
