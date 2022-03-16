@@ -133,3 +133,4 @@ One rule holds true:
 ## TODO
 - [ ] Allow for arbitrary HEREDOC strings ("<<CREDENTIALS", "```")
 - [ ] Allow HEREDOC to start and end mid-line
+- [ ] warn if PRIVATE/ heredoc's end sentinel is not within the encrypted contents (https://news.ycombinator.com/reply?id=30704575&goto=item%3Fid%3D30703161%2330704575)
