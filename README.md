@@ -137,3 +137,4 @@ One rule holds true:
 - [ ] don't commit release binaries
 - [ ] be less dramatic (git reset --hard), and warn if dirty on unlocking the repo
 - [ ] add license in repo
+- [ ] more warnings if heredocs are malformed (`<PRIVATE`, `<<PIRVATE`, etc)
