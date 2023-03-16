@@ -1,4 +1,3 @@
-NOTE: this is a WIP, use at your own peril!
 privatize 👀
 ===================================================================================
 
@@ -11,6 +10,10 @@ on commit and decrypted on checkout while the rest of the file remains
 untouched.
 
 Inspired by [git-crypt](https://github.com/AGWA/git-crypt).
+
+🚨🚨🚨
+**NOTE**: this is a WIP, use at your own peril!
+
 
 ## Installation
 ### MacOS
